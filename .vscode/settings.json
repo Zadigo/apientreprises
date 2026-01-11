@@ -1,0 +1,15 @@
+{
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": true,
+    // "python.testing.pytestPath": ".venv/bin/pytest",
+    // "python.testing.pytestArgs": [
+    //     "--rootdir",
+    //     "${workspaceFolder}/tests",
+    //     "--no-cov"
+    // ]
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.unusedImports": "explicit"
+        },
+    }
+}

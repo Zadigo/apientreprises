@@ -1,0 +1,5 @@
+conf:
+  max_urls: 5
+  wait_time: 3
+  iteration_wait_time: 40
+  pagination: 0

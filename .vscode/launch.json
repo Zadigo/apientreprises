@@ -1,0 +1,44 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "BASE_DIR": "${workspaceFolder}/apientreprises"
+            }
+        },
+        {
+            "name": "Python: Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/bin/pytest",
+            "args": [
+                "--rootdir",
+                "${workspaceFolder}/tests"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "BASE_DIR": "${workspaceFolder}/apientreprises"
+            }
+        },
+        {
+            "name": "Unittest Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/bin/python",
+            "args": [
+                "-m",
+                "unittest",
+                "${file}"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "BASE_DIR": "${workspaceFolder}/apientreprises"
+            }
+        }
+    ]
+}
