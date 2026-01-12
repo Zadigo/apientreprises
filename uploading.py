@@ -63,7 +63,7 @@ async def create_s3_connection(settings: SettingsModel = None, region_name: str 
 
             if error_code == '404':
                 logger.warning(
-                    f"🔴 Bucket {os.getenv('AWS_STORAGE_BUCKET_NAME')} "
+                    f"❌ Bucket {os.getenv('AWS_STORAGE_BUCKET_NAME')} "
                     "not found. Attempting to create..."
                 )
 
@@ -88,20 +88,20 @@ async def create_s3_connection(settings: SettingsModel = None, region_name: str 
                     )
 
                     logger.info(
-                        f"🟢 Created bucket: {os.getenv('AWS_STORAGE_BUCKET_NAME')}")
+                        f"✅ Created bucket: {os.getenv('AWS_STORAGE_BUCKET_NAME')}")
                 except ClientError as creation_error:
                     raise Exception(
-                        f"🔴 Failed to create bucket '{os.getenv('AWS_STORAGE_BUCKET_NAME')}': "
+                        f"❌ Failed to create bucket '{os.getenv('AWS_STORAGE_BUCKET_NAME')}': "
                         f"{creation_error.response['Error']['Message']}"
                     )
             elif error_code == '403':
                 raise Exception(
-                    f"🔴 Access denied to bucket '{os.getenv('AWS_STORAGE_BUCKET_NAME')}'. "
+                    f"❌ Access denied to bucket '{os.getenv('AWS_STORAGE_BUCKET_NAME')}'. "
                     f"Check your AWS credentials and bucket permissions."
                 )
             else:
                 raise Exception(
-                    f"🔴 Failed to access bucket '{os.getenv('AWS_STORAGE_BUCKET_NAME')}': "
+                    f"❌ Failed to access bucket '{os.getenv('AWS_STORAGE_BUCKET_NAME')}': "
                     f"{e.response['Error']['Message']}"
                 )
 

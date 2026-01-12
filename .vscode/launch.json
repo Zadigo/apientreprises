@@ -12,7 +12,7 @@
             }
         },
         {
-            "name": "Python: Tests",
+            "name": "Python: Tests (pytest)",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/.venv/bin/pytest",
@@ -20,25 +20,7 @@
                 "--rootdir",
                 "${workspaceFolder}/tests"
             ],
-            "console": "integratedTerminal",
-            "env": {
-                "BASE_DIR": "${workspaceFolder}/apientreprises"
-            }
-        },
-        {
-            "name": "Unittest Current File",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/.venv/bin/python",
-            "args": [
-                "-m",
-                "unittest",
-                "${file}"
-            ],
-            "console": "integratedTerminal",
-            "env": {
-                "BASE_DIR": "${workspaceFolder}/apientreprises"
-            }
+            "console": "integratedTerminal"
         }
     ]
 }

@@ -1,15 +1,19 @@
 import mimetypes
 import os
+from typing import Any
 
 from asgiref.sync import async_to_sync
 from boto3.s3 import transfer
 from boto3.s3.transfer import ClientError
 from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
 from celery import shared_task
-
+from celery.utils.log import get_task_logger
 from apientreprises import BASE_DIR, logger
 from apientreprises.uploading import (GZIP_CONTENT_TYPES, compress_string,
                                       create_s3_connection)
+
+
+celery_logger = get_task_logger(__name__)
 
 
 @shared_task
@@ -50,7 +54,7 @@ def upload_to_storage(filename: str, renamegzip: bool = False):
 
             extra_args["ContentEncoding"] = 'gzip'
 
-            logger.info(
+            celery_logger.warning(
                 f"Gzipped file: {file_size / 1024} "
                 f"to {file_data / 1024}"
             )
@@ -78,10 +82,20 @@ def upload_to_storage(filename: str, renamegzip: bool = False):
                     Key=filename,
                     ExtraArgs=extra_args
                 )
+            celery_logger.info(f"🟢 Uploaded file: {filename} to S3 bucket")
         except ClientError as e:
-            logger.error(f"🔴 Failed to upload file: {filename}")
+            celery_logger.error(f"🔴 Failed to upload file: {filename}")
         except (ClientError, NoCredentialsError, BotoCoreError) as e:
-            logger.error(f"🔴 AWS S3 upload error: {e}")
+            celery_logger.error(f"🔴 AWS S3 upload error: {e}")
             raise
         else:
-            logger.info(f"✅ Uploaded file: {filename} to S3 bucket")
+            celery_logger.info(f"✅ Uploaded file: {filename} to S3 bucket")
+
+
+@shared_task
+def clean_data(data: dict[str, Any]):
+    return None
+
+# conn = async_to_sync(redis_connection)()
+# data = async_to_sync(conn.xread)('responses', count=1000, block=5000)
+# return {}

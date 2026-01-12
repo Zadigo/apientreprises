@@ -1,95 +1,75 @@
 import asyncio
-import uuid
 from typing import Any
+import uuid
 
 import httpx
-import orjson
-import orjson
-import json
-import redis
-import yaml
 from pydantic import ValidationError
-from asgiref.sync import sync_to_async
-
-from apientreprises import BASE_DIR, logger
+from apientreprises import tasks as celery_tasks
+from apientreprises import logger
 from apientreprises.models import SettingsModel, UrlsModel
+from apientreprises.utils import (load_settings_file,
+                                  read_from_json, redis_connection, write_to_json)
 
-lock = asyncio.Lock()
-
-
-async def load_settings_file() -> dict[str, Any]:
-    with open(BASE_DIR / 'settings.yaml', 'r', encoding='utf-8') as f:
-        settings = yaml.safe_load(f)
-    return settings
+data_queue = asyncio.Queue()
 
 
-async def read_from_json(filename: str) -> dict:
-    path = BASE_DIR / f'{filename}.json'
-    if not path.exists():
-        return {}
-
-    with open(path, 'rb') as f:
-        return orjson.loads(f.read())
-
-
-async def write_to_json(data: dict, filename: str):
-    async with lock:
-        path = BASE_DIR / f'{filename}.json'
-        with open(path, mode='w') as f:
-            try:
-                clean_data = orjson.dumps(data, option=orjson.OPT_INDENT_2)
-                items = json.loads(json.loads(clean_data))
-                json.dump(items, f)
-                return True
-            except OSError:
-                json.dump({}, f)
-                raise
-            except Exception as e:
-                json.dump({}, f)
-                logger.error(f'❌ Error writing to {filename}.json: {e}')
-                raise
-
-
-async def redis_connection() -> redis.asyncio.Redis:
-    conn = redis.asyncio.from_url('redis://localhost', decode_responses=True)
-
+async def requester(url: str, settings: SettingsModel) -> tuple[int | None, dict[str, Any] | None]:
     try:
-        await conn.ping()
-    except redis.ConnectionError as e:
-        raise SystemExit(f'Error connecting to Redis: {e}')
-
-    return conn
-
-
-async def requester(url: str, settings: SettingsModel):
-    try:
-        async with httpx.AsyncClient(timeout=settings.conf.wait_time) as client:
+        async with httpx.AsyncClient() as client:
             response = await client.get(url)
             response.raise_for_status()
     except httpx.RequestError as e:
         logger.error(f'❌ Error fetching {url}: {e}')
-        return None
+        return None, None
+    except Exception as e:
+        logger.error(f'❌ Unexpected error for {url}: {e}')
+        return None, None
     else:
         logger.info(f'✅ Url: {url} ({response.status_code})')
-        return response.json()
+        return response.status_code, response.json()
 
 
-async def celery_processor():
+async def celery_processor(debug_mode: bool = False):
     while True:
+        if not data_queue.empty():
+            data = await data_queue.get()
+
+            # Process the data (e.g., save to database, further analysis, etc.)
+            logger.info(f'⚪️ Processing data: {data}')
+            celery_tasks.clean_data.apply_async(args=[data])
+
+        if debug_mode:
+            break
+
         await asyncio.sleep(20)
 
 
-async def processor(items: UrlsModel, settings: SettingsModel):
+async def processor(items: UrlsModel, settings: SettingsModel, debug_mode: bool = False):
+    conn = await redis_connection()
+
     while True:
         counter = 0
+
         async with asyncio.TaskGroup() as tg:
             while counter <= 10:
-                url = items.pending_urls.pop(0)
+                try:
+                    url = items.pending_urls.pop(0)
+                except IndexError:
+                    logger.info('✅ No more pending URLs to process.')
+                    break
 
                 try:
                     async with asyncio.timeout(300):
                         task = tg.create_task(requester(url, settings))
                         task.add_done_callback(lambda t: None)
+
+                        status_code, data = await task
+                        if status_code is None or data is None:
+                            continue
+
+                        await conn.xadd('responses', '*', {'url': url, 'status_code': status_code, 'content': data})
+                        await data_queue.put(data)
+
                         counter += 1
                 except asyncio.TimeoutError:
                     logger.info(f'❌ Timeout while processing URL: {url}')
@@ -99,6 +79,9 @@ async def processor(items: UrlsModel, settings: SettingsModel):
 
             if counter >= 10:
                 counter = 0
+
+        if debug_mode:
+            break
 
         await asyncio.sleep(settings.conf.iteration_wait_time)
 
