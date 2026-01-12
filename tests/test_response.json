@@ -1,0 +1,209 @@
+{
+  "results": [
+    {
+      "siren": "356000000",
+      "nom_complet": "la poste",
+      "nom_raison_sociale": "LA POSTE",
+      "sigle": null,
+      "nombre_etablissements": 12734,
+      "nombre_etablissements_ouverts": 9524,
+      "siege": {
+        "activite_principale": "53.10Z",
+        "activite_principale_naf25": "53.10A",
+        "activite_principale_registre_metier": null,
+        "annee_tranche_effectif_salarie": "2020",
+        "adresse": "19 RUE DE LA POSTE 31700 CORNEBARRIEU",
+        "caractere_employeur": "O",
+        "cedex": null,
+        "code_pays_etranger": null,
+        "code_postal": "75015",
+        "commune": "75115",
+        "complement_adresse": "DIRECTION GENERALE DE LA POSTE",
+        "coordonnees": "43.292154,5.359134",
+        "date_creation": "2019-08-24",
+        "date_debut_activite": "2014-04-29",
+        "date_fermeture": "2019-08-24",
+        "date_mise_a_jour": "2023-09-21T03:34:50",
+        "date_mise_a_jour_insee": "2023-09-21T03:34:50",
+        "departement": "75",
+        "distribution_speciale": null,
+        "epci": "200058519",
+        "est_siege": false,
+        "etat_administratif": "A",
+        "geo_adresse": "58 Boulevard charles livon 13007 Marseille",
+        "geo_id": "31150_0157_00019",
+        "indice_repetition": null,
+        "latitude": "48.83002",
+        "libelle_cedex": null,
+        "libelle_commune": "PARIS 15",
+        "libelle_commune_etranger": null,
+        "libelle_pays_etranger": null,
+        "libelle_voie": "DU COLONEL PIERRE AVIA",
+        "liste_enseignes": [
+          "LA POSTE"
+        ],
+        "liste_finess": [
+          "950000364"
+        ],
+        "liste_id_bio": [
+          "0923"
+        ],
+        "liste_idcc": [
+          "0923"
+        ],
+        "liste_id_organisme_formation": [
+          "string"
+        ],
+        "liste_rge": [
+          "4131D111",
+          "7122D111"
+        ],
+        "liste_uai": [
+          "0170100S"
+        ],
+        "longitude": "2.275688",
+        "nom_commercial": null,
+        "numero_voie": "9",
+        "region": "11",
+        "siret": "35600000000048",
+        "statut_diffusion_etablissement": "O",
+        "tranche_effectif_salarie": "12",
+        "type_voie": "RUE"
+      },
+      "activite_principale": "53.10Z",
+      "activite_principale_naf25": "53.10A",
+      "categorie_entreprise": "GE",
+      "caractere_employeur": "O",
+      "annee_categorie_entreprise": "2020",
+      "date_creation": "1991-01-01",
+      "date_fermeture": "2019-08-24",
+      "date_mise_a_jour": "2023-09-21T03:34:50",
+      "date_mise_a_jour_insee": "2023-09-21T03:34:50",
+      "date_mise_a_jour_rne": "2023-09-20T02:15:30",
+      "dirigeants": [
+        {
+          "nom": "Dupont",
+          "prenoms": "John",
+          "annee_de_naissance": "1964",
+          "date_de_naissance": "1964-09",
+          "qualite": "Directeur général",
+          "nationalite": "Française",
+          "type_dirigeant": "personne physique"
+        }
+      ],
+      "etat_administratif": "A",
+      "nature_juridique": "5510",
+      "section_activite_principale": "H",
+      "tranche_effectif_salarie": "53",
+      "annee_tranche_effectif_salarie": "2020",
+      "statut_diffusion": "O",
+      "matching_etablissements": [
+        {
+          "activite_principale": "53.10Z",
+          "activite_principale_naf25": "53.10A",
+          "ancien_siege": false,
+          "annee_tranche_effectif_salarie": "2020",
+          "adresse": "19 RUE DE LA POSTE 31700 CORNEBARRIEU",
+          "caractere_employeur": "O",
+          "code_postal": "75015",
+          "commune": "75115",
+          "date_creation": "2019-08-24",
+          "date_debut_activite": "2014-04-29",
+          "date_fermeture": "2019-08-24",
+          "epci": "200058519",
+          "est_siege": false,
+          "etat_administratif": "A",
+          "geo_id": "31150_0157_00019",
+          "latitude": "48.83002",
+          "libelle_commune": "PARIS 15",
+          "liste_enseignes": [
+            "LA POSTE"
+          ],
+          "liste_finess": [
+            "950000364"
+          ],
+          "liste_id_bio": [
+            "0923"
+          ],
+          "liste_idcc": [
+            "0923"
+          ],
+          "liste_id_organisme_formation": [
+            "string"
+          ],
+          "liste_rge": [
+            "4131D111",
+            "7122D111"
+          ],
+          "liste_uai": [
+            "0170100S"
+          ],
+          "longitude": "2.275688",
+          "nom_commercial": null,
+          "region": "11",
+          "siret": "35600000000048",
+          "statut_diffusion_etablissement": "O",
+          "tranche_effectif_salarie": "12"
+        }
+      ],
+      "finances": {
+        "2021": {
+          "ca": 26617000000,
+          "resultat_net": 2597000000
+        }
+      },
+      "complements": {
+        "collectivite_territoriale": {
+          "code": "01",
+          "code_insee": "01",
+          "elus": [
+            {
+              "nom": "string",
+              "prenoms": "string",
+              "annee_de_naissance": "1964",
+              "fonction": "Maire",
+              "sexe": "F"
+            }
+          ],
+          "niveau": "département"
+        },
+        "convention_collective_renseignee": true,
+        "liste_idcc": [
+          "string"
+        ],
+        "liste_finess_juridique": [
+          "string"
+        ],
+        "egapro_renseignee": true,
+        "est_achats_responsables": true,
+        "est_alim_confiance": true,
+        "est_association": false,
+        "est_bio": true,
+        "est_entrepreneur_individuel": false,
+        "est_entrepreneur_spectacle": false,
+        "est_ess": false,
+        "est_finess": false,
+        "est_organisme_formation": true,
+        "est_qualiopi": true,
+        "liste_id_organisme_formation": [
+          "7423P001123"
+        ],
+        "est_rge": false,
+        "est_service_public": false,
+        "est_l100_3": false,
+        "est_siae": false,
+        "est_societe_mission": false,
+        "est_uai": false,
+        "est_patrimoine_vivant": true,
+        "bilan_ges_renseigne": false,
+        "identifiant_association": null,
+        "statut_entrepreneur_spectacle": "string",
+        "type_siae": "string"
+      }
+    }
+  ],
+  "total_results": 0,
+  "page": 1,
+  "per_page": 10,
+  "total_pages": 1000
+}

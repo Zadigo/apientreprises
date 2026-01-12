@@ -4,6 +4,8 @@ import logging
 
 BASE_DIR = pathlib.Path(__file__).parent.resolve()
 
+DATA_DIR = BASE_DIR / 'data'
+
 
 LOGGING_CONF = {
     'version': 1,

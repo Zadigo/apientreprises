@@ -1,19 +1,30 @@
 import asyncio
-from typing import Any
 import uuid
+from typing import Any
 
 import httpx
 from pydantic import ValidationError
-from apientreprises import tasks as celery_tasks
+
 from apientreprises import logger
-from apientreprises.models import SettingsModel, UrlsModel
-from apientreprises.utils import (load_settings_file,
-                                  read_from_json, redis_connection, write_to_json)
+from apientreprises import tasks as celery_tasks
+from apientreprises.models import DataModel, SettingsModel, UrlsModel
+from apientreprises.utils import (load_settings_file, read_from_json,
+                                  redis_connection, write_to_json)
 
 data_queue = asyncio.Queue()
 
 
 async def requester(url: str, settings: SettingsModel) -> tuple[int | None, dict[str, Any] | None]:
+    """Makes an asynchronous HTTP GET request to the specified URL
+    and returns the status code and JSON response.
+
+    Args:
+        url (str): The URL to request.
+        settings (SettingsModel): The settings model with configuration.
+    """
+    # Some API endpoints may have rate limits; respect them
+    await asyncio.sleep(settings.conf.wait_time)
+
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
@@ -29,7 +40,11 @@ async def requester(url: str, settings: SettingsModel) -> tuple[int | None, dict
         return response.status_code, response.json()
 
 
-async def celery_processor(debug_mode: bool = False):
+async def file_processor(debug_mode: bool = False):
+    """The file processor continuously checks the data queue for new data
+    and processes it accordingly by creating the necessary Celery tasks
+    for file creation, uploading, etc.
+    """
     while True:
         if not data_queue.empty():
             data = await data_queue.get()
@@ -41,10 +56,18 @@ async def celery_processor(debug_mode: bool = False):
         if debug_mode:
             break
 
-        await asyncio.sleep(20)
+        await asyncio.sleep(10)
 
 
-async def processor(items: UrlsModel, settings: SettingsModel, debug_mode: bool = False):
+async def urls_processor(items: UrlsModel, settings: SettingsModel, debug_mode: bool = False):
+    """The URLs processor continuously processes pending URLs, fetching data
+    from each URL and storing the results in Redis.
+
+    Args:
+        items (UrlsModel): The URLs model containing pending and done URLs.
+        settings (SettingsModel): The settings model with configuration.
+        debug_mode (bool, optional): If True, runs in debug mode and exits after one iteration. Defaults to False.
+    """
     conn = await redis_connection()
 
     while True:
@@ -67,8 +90,11 @@ async def processor(items: UrlsModel, settings: SettingsModel, debug_mode: bool 
                         if status_code is None or data is None:
                             continue
 
-                        await conn.xadd('responses', '*', {'url': url, 'status_code': status_code, 'content': data})
-                        await data_queue.put(data)
+                        data_model = DataModel(**data)
+                        validated_data = data_model.model_dump_json()
+
+                        await conn.xadd('responses', '*', {'url': url, 'status_code': status_code, 'content': validated_data})
+                        await data_queue.put(validated_data)
 
                         counter += 1
                 except asyncio.TimeoutError:
@@ -103,12 +129,7 @@ async def main():
         await conn.hset(runid, 'counter', 0)
 
     # Load settings file
-    settings = await load_settings_file()
-
-    try:
-        settings_model = SettingsModel(**settings)
-    except ValidationError as e:
-        raise SystemExit(f'Error in settings file: {e}')
+    settings_model = await load_settings_file()
 
     urls_file = await read_from_json('urls')
 
@@ -129,8 +150,8 @@ async def main():
     logger.info(f'🔑 Run ID: {runid}')
     logger.info(f'📥 Pending URLs: {len(urls_model.pending_urls)}')
 
-    t1 = asyncio.create_task(processor(urls_model, settings_model))
-    t2 = asyncio.create_task(celery_processor())
+    t1 = asyncio.create_task(urls_processor(urls_model, settings_model))
+    t2 = asyncio.create_task(file_processor())
     await asyncio.gather(t1, t2)
 
 

@@ -1,5 +1,6 @@
 import mimetypes
 import os
+import pandas
 from typing import Any
 
 from asgiref.sync import async_to_sync
@@ -8,10 +9,10 @@ from boto3.s3.transfer import ClientError
 from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from apientreprises import BASE_DIR, logger
+
+from apientreprises import BASE_DIR
 from apientreprises.uploading import (GZIP_CONTENT_TYPES, compress_string,
                                       create_s3_connection)
-
 
 celery_logger = get_task_logger(__name__)
 
@@ -94,6 +95,11 @@ def upload_to_storage(filename: str, renamegzip: bool = False):
 
 @shared_task
 def clean_data(data: dict[str, Any]):
+    df = pandas.DataFrame(data)
+
+
+@shared_task
+def create_file(data: dict[str, Any]):
     return None
 
 # conn = async_to_sync(redis_connection)()

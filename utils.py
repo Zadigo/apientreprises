@@ -1,22 +1,28 @@
 import asyncio
 import json
 import logging
-from typing import Any
 
 import orjson
+from pydantic import ValidationError
 import redis
 import yaml
 
 from apientreprises import BASE_DIR, logger
+from apientreprises.models import SettingsModel
 
 lock = asyncio.Lock()
 
 
-async def load_settings_file() -> dict[str, Any]:
+async def load_settings_file() -> SettingsModel:
     with open(BASE_DIR / 'settings.yaml', 'r', encoding='utf-8') as f:
         settings = yaml.safe_load(f)
         logger.info('🟢 Loaded settings file successfully.')
-        return settings
+
+        try:
+            settings_model = SettingsModel(**settings)
+        except ValidationError as e:
+            raise SystemExit(f'Error in settings file: {e}')
+        return settings_model
 
 
 async def read_from_json(filename: str) -> dict:
