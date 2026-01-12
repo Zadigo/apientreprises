@@ -12,7 +12,7 @@ LOGGING_CONF = {
     'formatters': {
         'standard': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-        },
+        }
     },
     'handlers': {
         'console': {
@@ -20,13 +20,19 @@ LOGGING_CONF = {
             'formatter': 'standard',
             'level': logging.DEBUG,
         },
+        'file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'standard',
+            'level': logging.INFO,
+            'filename': str(BASE_DIR / 'app.log'),
+        }
     },
     'loggers': {
         '': {  # root logger
-            'handlers': ['console'],
+            'handlers': ['file'],
             'level': logging.DEBUG,
             'propagate': False
-        },
+        }
     }
 }
 

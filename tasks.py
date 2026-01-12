@@ -1,3 +1,4 @@
+import json
 import mimetypes
 import os
 import asgiref
@@ -99,13 +100,14 @@ def upload_to_storage(filename: str, renamegzip: bool = False):
 @shared_task
 def clean_data(data: dict[str, Any]):
     df = pandas.DataFrame(data)
+    return json.loads(df.to_json(orient='records'))
 
 
 @shared_task
 def create_file(data: dict[str, Any]):
     filename = DATA_DIR / f"{uuid.uuid4()}.json"
     asgiref.sync.async_to_sync(write_to_json)(data, filename)
-    celery_logger.info(f"✅ Created JSON file: {data}")
+    celery_logger.info(f"✅ Created JSON file: {filename}")
 
 # conn = async_to_sync(redis_connection)()
 # data = async_to_sync(conn.xread)('responses', count=1000, block=5000)

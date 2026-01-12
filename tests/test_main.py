@@ -43,8 +43,8 @@ class TestMain(unittest.IsolatedAsyncioTestCase):
             return_value=Mock(wait_time=0, iteration_wait_time=0))
 
         items.pending_urls = [
-            'https://jsonplaceholder.typicode.com/todos/1',
-            'https://jsonplaceholder.typicode.com/todos/2'
+            'https://recherche-entreprises.api.gouv.fr/search?q=la%20poste&page=1&per_page=1',
+            'https://recherche-entreprises.api.gouv.fr/search?q=la%20poste&page=1&per_page=1'
         ]
 
         with patch('apientreprises.main.redis_connection', AsyncMock()) as mredis:
