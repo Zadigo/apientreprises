@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import pathlib
 
 import orjson
 from pydantic import ValidationError
@@ -34,16 +35,27 @@ async def read_from_json(filename: str) -> dict:
         return orjson.loads(f.read())
 
 
-async def write_to_json(data: dict, filename: str):
+async def write_to_json(data: dict, filename: str | pathlib.Path) -> bool:
     if lock.locked():
         logging.warning(f'🟠 Waiting to write to JSON file ({filename})...')
 
     async with lock:
-        path = BASE_DIR / f'{filename}.json'
+        if isinstance(filename, str):
+            path = BASE_DIR / f'{filename}.json'
+        else:
+            path = filename
+
+            if not path.suffix == '.json':
+                path = path.with_suffix('.json')
+
         with open(path, mode='w') as f:
             try:
                 clean_data = orjson.dumps(data, option=orjson.OPT_INDENT_2)
-                items = json.loads(json.loads(clean_data))
+
+                items = json.loads(clean_data)
+                if isinstance(items, str):
+                    items = json.loads(items)
+
                 json.dump(items, f)
                 logger.info(f'🟢 Successfully wrote to {filename}.json')
                 return True

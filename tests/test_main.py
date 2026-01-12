@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, Mock, PropertyMock, patch
 
 
 from apientreprises.main import requester
+from apientreprises.main import main
 
 
 class TestMain(unittest.IsolatedAsyncioTestCase):
@@ -57,3 +58,6 @@ class TestMain(unittest.IsolatedAsyncioTestCase):
 
             await urls_processor(items, settings, debug_mode=True)
             # self.assertEqual(mconn.xadd.await_count, 2)
+
+    async def test_main(self):
+        await main('la poste')

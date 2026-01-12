@@ -1,8 +1,10 @@
 import mimetypes
 import os
+import asgiref
+import asgiref.sync
 import pandas
 from typing import Any
-
+import uuid
 from asgiref.sync import async_to_sync
 from boto3.s3 import transfer
 from boto3.s3.transfer import ClientError
@@ -10,9 +12,10 @@ from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
-from apientreprises import BASE_DIR
+from apientreprises import BASE_DIR, DATA_DIR
 from apientreprises.uploading import (GZIP_CONTENT_TYPES, compress_string,
                                       create_s3_connection)
+from utils import write_to_json
 
 celery_logger = get_task_logger(__name__)
 
@@ -100,7 +103,9 @@ def clean_data(data: dict[str, Any]):
 
 @shared_task
 def create_file(data: dict[str, Any]):
-    return None
+    filename = DATA_DIR / f"{uuid.uuid4()}.json"
+    asgiref.sync.async_to_sync(write_to_json)(data, filename)
+    celery_logger.info(f"✅ Created JSON file: {data}")
 
 # conn = async_to_sync(redis_connection)()
 # data = async_to_sync(conn.xread)('responses', count=1000, block=5000)

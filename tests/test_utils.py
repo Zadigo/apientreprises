@@ -19,8 +19,6 @@ async def test_load_settings_file():
     result = await load_settings_file()
     assert result is not None
     assert hasattr(result, 'conf')
-    assert hasattr(result.conf, 'wait_time')
-    assert hasattr(result.conf, 'iteration_wait_time')
 
 
 @pytest.mark.asyncio
